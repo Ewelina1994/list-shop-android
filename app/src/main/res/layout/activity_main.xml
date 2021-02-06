@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/mainColor">
+        <Button
+            android:id="@+id/listAll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/mainColor"
+            android:text="@string/list"
+            android:textColor="@android:color/white"
+            android:drawableBottom="@drawable/baseline_list_white_18dp"
+            android:drawablePadding="15sp">
+        </Button>
+        <Button
+            android:id="@+id/listDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/mainColor"
+            android:text="@string/list_details"
+            android:textColor="@android:color/white"
+            android:drawableBottom="@drawable/baseline_archive_white_18dp"
+            android:drawablePadding="15sp">
+
+        </Button>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerId"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp"
+     />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:src="@drawable/ic_add_circle_black_24dp"
+        android:layout_alignEnd="@id/recyclerId"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="25dp"
+        android:clickable="true"
+        android:focusable="true"/>
+    </RelativeLayout>
+</LinearLayout>

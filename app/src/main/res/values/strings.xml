@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">My-list-shop</string>
+    <string name="list">Shopping Lists</string>
+    <string name="list_archive">Archived Shopping Lists</string>
+    <string name="list_details">Schopping list details</string>
+    <string name="database_not_available">Database is not available</string>
+    <string name="name_item">Title new item</string>
+    <string name="name_item_details">Title new item details</string>
+    <string name="edit_item">Edit name item detail</string>
+
+</resources>
