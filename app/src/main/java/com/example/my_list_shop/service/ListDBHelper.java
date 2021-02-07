@@ -59,13 +59,35 @@ public class ListDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addItem(Item item){
+    public long addItem(Item item){
         db=getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(ListContract.ListTable.COLUMN_TITLE, item.getTitle());
         cv.put(ListContract.ListTable.COLUMN_IS_REMOVED, item.getIsRemoved());
         cv.put(ListContract.ListTable.COLUMN_DATE, String.valueOf(item.getData()));
-        return (db.insert(ListContract.ListTable.TABLE_NAME, null, cv)) > 0;
+
+        getLastId();
+        return getLastId();
+    }
+
+    private long getLastId() {
+        long index = 0;
+        SQLiteDatabase sdb = getReadableDatabase();
+        Cursor cursor = sdb.query(
+                "sqlite_sequence",
+                new String[]{"seq"},
+                "name = ?",
+                new String[]{ListContract.ListTable.TABLE_NAME},
+                null,
+                null,
+                null,
+                null
+        );
+        if (cursor.moveToFirst()) {
+            index = cursor.getLong(cursor.getColumnIndex("seq"));
+        }
+        cursor.close();
+        return index;
     }
 
     public boolean updateItem(Item item){

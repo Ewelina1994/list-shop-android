@@ -1,7 +1,6 @@
-package com.example.my_list_shop;
+package com.example.my_list_shop.recycler_view;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +9,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.my_list_shop.R;
 import com.example.my_list_shop.entity.ItemDetails;
-import com.example.my_list_shop.service.ListDBHelper;
 
 import java.util.List;
 
@@ -26,6 +26,7 @@ public class RecyclerViewDetails {
         mContext = context;
         itemDetailsAdapter = new RecyclerViewDetails.ItemAdapter(list, mContext, recyclerInterface);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(itemDetailsAdapter);
         return itemDetailsAdapter;
     }
@@ -85,20 +86,6 @@ public class RecyclerViewDetails {
                  }
              });
          }
-
-//         private void deleteItem(ItemDetails item, @NonNull final RecyclerViewDetails.ItemView holder) {
-//             if (item.getIs_removed() == 0) {
-//                 item.setIs_removed(1);
-//                 dbHelper.deleteItemDetails(item.getId());
-//                 holder.check.setImageResource(R.drawable.ic_check_circle_black_24dp);
-//                 holder.title.setPaintFlags(holder.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-//             } else {
-//                 item.setItem_id(0);
-//                 dbHelper.noDeleteItemDetails(item.getId());
-//                 holder.check.setImageResource(R.drawable.ic_radio_button_unchecked_black_24dp);
-//                 holder.title.setPaintFlags(holder.title.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-//
-//             }
 
 
          @Override

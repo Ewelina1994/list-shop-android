@@ -1,4 +1,4 @@
-package com.example.my_list_shop;
+package com.example.my_list_shop.recycler_view;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,9 +7,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.my_list_shop.R;
 import com.example.my_list_shop.entity.Item;
 
 import java.util.List;
@@ -22,6 +24,8 @@ public class RecyclerViewItem {
         mContext = context;
         mQuestionAdapter = new ItemAdapter(list, mContext, recyclerInterface);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
+
         recyclerView.setAdapter(mQuestionAdapter);
         return mQuestionAdapter;
     }

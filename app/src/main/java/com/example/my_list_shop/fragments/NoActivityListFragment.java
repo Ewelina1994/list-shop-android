@@ -1,4 +1,4 @@
-package com.example.my_list_shop;
+package com.example.my_list_shop.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,13 +11,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.my_list_shop.R;
+import com.example.my_list_shop.recycler_view.RecyclerViewClickInterface;
+import com.example.my_list_shop.recycler_view.RecyclerViewItem;
 import com.example.my_list_shop.activity.DetailsListActivity;
 import com.example.my_list_shop.entity.Item;
 import com.example.my_list_shop.service.ListDBHelper;
 
 import java.util.List;
 
-public class NoActivityListFragment extends Fragment implements RecyclerViewClickInterface{
+public class NoActivityListFragment extends Fragment implements RecyclerViewClickInterface {
     View v;
     private RecyclerView mRecyclerView;
     private ListDBHelper dbHelper;
@@ -43,6 +46,13 @@ public class NoActivityListFragment extends Fragment implements RecyclerViewClic
         itemList = dbHelper.getListItemArchived();
     }
 
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        itemList = dbHelper.getListItemArchived();
+//        adapter.notifyDataSetChanged();
+//    }
+
     @Override
     public void onItemClick(int position) {
         Intent intentDetails = new Intent(getActivity(), DetailsListActivity.class);
@@ -57,5 +67,11 @@ public class NoActivityListFragment extends Fragment implements RecyclerViewClic
     @Override
     public void onLongItemClick(int position) {
 
+    }
+
+    public void addItemToArchivedListFromAnotcherFragment(Item newItem) {
+        itemList.add(newItem);
+        int position = itemList.indexOf(newItem);
+        adapter.notifyItemChanged(position);
     }
 }

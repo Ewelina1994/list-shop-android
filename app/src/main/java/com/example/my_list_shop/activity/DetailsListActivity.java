@@ -3,6 +3,8 @@ package com.example.my_list_shop.activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
@@ -12,24 +14,34 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.my_list_shop.R;
-import com.example.my_list_shop.RecyclerViewClickInterface;
-import com.example.my_list_shop.RecyclerViewDetails;
+import com.example.my_list_shop.recycler_view.RecyclerViewClickInterface;
+import com.example.my_list_shop.recycler_view.RecyclerViewDetails;
 import com.example.my_list_shop.entity.ItemDetails;
 import com.example.my_list_shop.service.ListDBHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 public class DetailsListActivity extends AppCompatActivity implements RecyclerViewClickInterface {
+    public static final String ITEM_LIST = "itemList";
+    public static final String RECYCLER = "recycler";
+    public static final String NEW_ITEM_NAME = "newItemName";
+    public static final String ID_PARENT = "idParent";
+    public static final String IS_ARCHIVED = "isArchived";
+    public static final String IS_SORT_DESC = "isSortedDesc";
+
     private RecyclerView mRecyclerView;
     private ListDBHelper dbHelper;
     private FloatingActionButton addItem;
-    List<ItemDetails> itemList;
+    ArrayList<ItemDetails> itemList;
     String newItemText;
-    String editNameItem;
-    long id_item;
+    long id_parent;
     boolean isArchived;
+    boolean isSortedDesc =true;
     RecyclerViewDetails.ItemAdapter adapter;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,23 +49,31 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
         setContentView(R.layout.details_list_activity);
         mRecyclerView = findViewById(R.id.recyclerId);
         addItem = (FloatingActionButton) findViewById(R.id.fab);
-        addItem.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                showDialogWindowAdd();
-            }
-        });
-        //        if (savedInstanceState == null) {
         dbHelper = new ListDBHelper(this);
-        id_item=getIntent().getLongExtra("id_item", -1);
-        isArchived=getIntent().getBooleanExtra("is_archived", false);
 
-        if(isArchived){
+
+            addItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDialogWindowAdd();
+                }
+            });
+            id_parent = getIntent().getLongExtra("id_item", -1);
+            isArchived = getIntent().getBooleanExtra("is_archived", false);
+
+            itemList = (ArrayList<ItemDetails>) dbHelper.getAllItemDetailsListByItemID(id_parent);
+
+            if (savedInstanceState != null){
+            itemList= savedInstanceState.getParcelableArrayList(ITEM_LIST);
+            savedInstanceState.getString(NEW_ITEM_NAME);
+            savedInstanceState.getLong(ID_PARENT);
+            savedInstanceState.getBoolean(IS_ARCHIVED);
+            savedInstanceState.getBoolean(IS_SORT_DESC);
+        }
+        adapter = new RecyclerViewDetails().setConfig(mRecyclerView, this, itemList, this);
+        if (isArchived) {
             addItem.setVisibility(View.GONE);
         }
-        itemList=dbHelper.getAllItemDetailsListByItemID(id_item);
-
-        adapter= new RecyclerViewDetails().setConfig(mRecyclerView, this, itemList, this);
     }
 
     private void showDialogWindowAdd() {
@@ -83,13 +103,13 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
     }
 
     private void addNewItemList() {
-        ItemDetails newItemDetails = new ItemDetails(id_item, newItemText, 0, new Date());
+        ItemDetails newItemDetails = new ItemDetails(id_parent, newItemText, 0, new Date());
         dbHelper.addItemDetails(newItemDetails);
         itemList.add(newItemDetails);
     }
     private void editItem(ItemDetails itemDetails, int position) {
-        if (!editNameItem.equals("")) {
-            itemDetails.setTitle(editNameItem);
+        if (!newItemText.equals("")) {
+            itemDetails.setTitle(newItemText);
             dbHelper.updateItemDetails(itemDetails);
             adapter.notifyItemChanged(position);
         }
@@ -106,7 +126,7 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                editNameItem = input.getText().toString();
+                newItemText = input.getText().toString();
                 editItem(item, position);
             }
         });
@@ -151,5 +171,50 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
         if(!isArchived) {
             showDialogWindowUpdate(itemList.get(position), position);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.id_sort) {
+            sortList(itemList);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void sortList(List<ItemDetails> itemList) {
+
+        if(!isSortedDesc){
+            Collections.sort(itemList, new Comparator<ItemDetails>() {
+                public int compare(ItemDetails o1, ItemDetails o2) {
+                    return o1.getDate().compareTo(o2.getDate());
+                }
+            });
+            isSortedDesc =true;
+        }else {
+            Collections.reverse(itemList);
+            System.out.println("sort odwrotne");
+            isSortedDesc =false;
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        savedInstanceState.putParcelableArrayList(ITEM_LIST, itemList);
+//        savedInstanceState.putString(RECYCLER, someString);
+        savedInstanceState.putString(NEW_ITEM_NAME, newItemText);
+        savedInstanceState.putLong(ID_PARENT, id_parent);
+        savedInstanceState.putBoolean(IS_ARCHIVED, isArchived);
+        savedInstanceState.putBoolean(IS_SORT_DESC, isSortedDesc);
+
+        //declare values before saving the state
+        super.onSaveInstanceState(savedInstanceState);
     }
 }

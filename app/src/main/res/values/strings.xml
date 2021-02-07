@@ -7,5 +7,7 @@
     <string name="name_item">Title new item</string>
     <string name="name_item_details">Title new item details</string>
     <string name="edit_item">Edit name item detail</string>
+    <string name="sorting">Sort</string>
+    <string name="are_you_sure_you_want_archived">Are you sure you want to archive this list?</string>
 
 </resources>

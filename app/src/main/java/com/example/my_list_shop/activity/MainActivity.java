@@ -1,9 +1,10 @@
 package com.example.my_list_shop.activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.annotation.SuppressLint;
@@ -13,39 +14,26 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.my_list_shop.FragmentActivityList;
-import com.example.my_list_shop.NoActivityListFragment;
+import com.example.my_list_shop.fragments.ComunicateBetweenFragments;
+import com.example.my_list_shop.entity.Item;
+import com.example.my_list_shop.fragments.FragmentActivityList;
+import com.example.my_list_shop.fragments.NoActivityListFragment;
 import com.example.my_list_shop.R;
 import com.example.my_list_shop.ViewPagerAdapter;
-import com.example.my_list_shop.service.ListDBHelper;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ComunicateBetweenFragments {
 
-    private RecyclerView mRecyclerView;
-    private ListDBHelper dbHelper;
-    private FloatingActionButton addItem;
+    private static final String CURRENT_FRAGMENT = "currentFrgm";
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
 
-//     List<Item> itemList;
-//    private String newItemText;
-//    private RecyclerViewConfig.ItemAdapter adapter;
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        mRecyclerView = findViewById(R.id.recyclerId);
-//        addItem = (FloatingActionButton) findViewById(R.id.fab);
-//        addItem.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                showDialogWindow();
-//            }
-//        });
         tabLayout = findViewById(R.id.tablayout_id);
         viewPager = findViewById(R.id.viewPagerId);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -70,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
                 R.string.list,
                 R.string.list_archive,
         };
-       // tabLayout.setSelectedTabIndicatorColor(R.color.colorAccent);
 
         // loop through all navigation tabs
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
@@ -81,14 +68,26 @@ public class MainActivity extends AppCompatActivity {
 
             tab_label.setText(getResources().getString(navLabels[i]));
             tab_icon.setImageResource(navIcons[i]);
-            // set the home to be active at first
 
             tabLayout.getTabAt(i).setCustomView(tab);
         }
-//        if (savedInstanceState == null) {
-//            dbHelper = new ListDBHelper(this);
-//            itemList = dbHelper.getAllItemList();
-//
-//            adapter = new RecyclerViewConfig().setConfig(mRecyclerView, MainActivity.this, itemList, this);
+
+        if(savedInstanceState!=null){
+
+        }
+
+    }
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
+
+    @Override
+    public void sendItemToArchive(Item itemToArchive) {
+        Fragment f = (NoActivityListFragment) viewPagerAdapter.getItem(1);
+        if(f!=null) {
+            ((NoActivityListFragment) f).addItemToArchivedListFromAnotcherFragment(itemToArchive);
+        }
     }
 }
