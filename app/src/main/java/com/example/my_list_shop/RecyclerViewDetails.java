@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -55,13 +54,11 @@ public class RecyclerViewDetails {
      public class ItemAdapter extends RecyclerView.Adapter<RecyclerViewDetails.ItemView> {
          private List<ItemDetails> itemDetailsList;
          private Context context;
-         private ListDBHelper dbHelper;
          private RecyclerViewClickInterface recyclerViewClickInterface;
 
          public ItemAdapter(List<ItemDetails> item, Context context, RecyclerViewClickInterface recycler) {
              this.itemDetailsList = item;
              this.context = context;
-             this.dbHelper = new ListDBHelper(context);
              this.recyclerViewClickInterface = recycler;
          }
 

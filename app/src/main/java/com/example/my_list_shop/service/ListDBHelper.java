@@ -25,13 +25,11 @@ public class ListDBHelper extends SQLiteOpenHelper {
 
     private static ListDBHelper instance;
     private SQLiteDatabase db;
-    List<Item> itemlist;
-    List<ItemDetails>listItemDetails;
+
 
     public ListDBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        itemlist=new ArrayList<>();
-        listItemDetails=new ArrayList<>();
+
     }
 
     public static synchronized ListDBHelper getInstance(Context context) {
@@ -70,11 +68,12 @@ public class ListDBHelper extends SQLiteOpenHelper {
         return (db.insert(ListContract.ListTable.TABLE_NAME, null, cv)) > 0;
     }
 
-    public boolean updateItem(Item item, long id_){
+    public boolean updateItem(Item item){
+        db=getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(ListContract.ListTable.COLUMN_TITLE, item.getTitle());
         cv.put(ListContract.ListTable.COLUMN_IS_REMOVED,item.getIsRemoved());
-        String id= String.valueOf(id_);
+        String id= String.valueOf(item.getId());
 
         return (db.update(ListContract.ListTable.TABLE_NAME, cv, "_id = ?", new String[]{id}))>0;
     }
@@ -87,19 +86,30 @@ public class ListDBHelper extends SQLiteOpenHelper {
         return (db.update(ListContract.ListTable.TABLE_NAME, cv, "_id = ?", new String[]{id}))>0;
     }
 
-    public List<Item> getAllItemList() {
+    public List<Item> getListItemActivity() {
         db = getWritableDatabase();
-        String[] columns={ListContract.ListTable._ID, ListContract.ListTable.COLUMN_TITLE, ListContract.ListTable.COLUMN_IS_REMOVED, ListContract.ListTable.COLUMN_DATE};
-        Cursor cursor = db.query(ListContract.ListTable.TABLE_NAME, columns, null, null, null, null, "datetime(date) DESC");
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ListContract.ListTable.TABLE_NAME +" WHERE " + ListContract.ListTable.COLUMN_IS_REMOVED + " = " + 0, null);
 
-        if(cursor.moveToFirst()){
-            do{
+        return writeDate(cursor);
+    }
+
+    public List<Item> getListItemArchived() {
+        db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ListContract.ListTable.TABLE_NAME +" WHERE " + ListContract.ListTable.COLUMN_IS_REMOVED + " = " + 1, null);
+
+        return writeDate(cursor);
+    }
+
+    public List<Item> writeDate(Cursor cursor) {
+        List<Item> itemlist= new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
                 Item newItem = new Item();
                 newItem.setId(cursor.getInt(cursor.getColumnIndex(ListContract.ListTable._ID)));
                 newItem.setTitle(cursor.getString(cursor.getColumnIndex(ListContract.ListTable.COLUMN_TITLE)));
                 newItem.setIsRemoved(cursor.getInt(cursor.getColumnIndex(ListContract.ListTable.COLUMN_IS_REMOVED)));
                 String s = cursor.getString(cursor.getColumnIndex(ListContract.ListTable.COLUMN_DATE));
-                SimpleDateFormat sdf2=new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
+                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy:mm:dd HH:mm:ss");
                 Date d = new Date();
                 try {
                     if (s != null) {
@@ -111,11 +121,10 @@ public class ListDBHelper extends SQLiteOpenHelper {
                 }
                 newItem.setData(d);
                 itemlist.add(newItem);
-            }while ((cursor.moveToNext()));
+            } while ((cursor.moveToNext()));
         }
         return itemlist;
     }
-
     public boolean addItemDetails(ItemDetails item){
         db=getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -155,6 +164,7 @@ public class ListDBHelper extends SQLiteOpenHelper {
         db = getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + ListDetailsContract.ListDetailsTable.TABLE_NAME +" WHERE " + ListDetailsContract.ListDetailsTable.COLUMN_LIST_ID + " = " + id, null);
 
+        List<ItemDetails> listItemDetails = new ArrayList<>();
         if(cursor.moveToFirst()){
             do{
                 ItemDetails newItem = new ItemDetails();

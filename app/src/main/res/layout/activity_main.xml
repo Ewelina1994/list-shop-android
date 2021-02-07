@@ -7,35 +7,49 @@
     android:orientation="vertical"
     tools:context=".activity.MainActivity">
 
-    <LinearLayout
+    <com.google.android.material.tabs.TabLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/mainColor">
-        <Button
-            android:id="@+id/listAll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/mainColor"
-            android:text="@string/list"
-            android:textColor="@android:color/white"
-            android:drawableBottom="@drawable/baseline_list_white_18dp"
-            android:drawablePadding="15sp">
-        </Button>
-        <Button
-            android:id="@+id/listDetails"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/mainColor"
-            android:text="@string/list_details"
-            android:textColor="@android:color/white"
-            android:drawableBottom="@drawable/baseline_archive_white_18dp"
-            android:drawablePadding="15sp">
+        android:background="@color/mainColor"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@color/itemList"
+        android:id="@+id/tablayout_id"></com.google.android.material.tabs.TabLayout>
 
-        </Button>
-    </LinearLayout>
+    <androidx.viewpager.widget.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/viewPagerId"></androidx.viewpager.widget.ViewPager>
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:background="@color/mainColor">-->
+<!--        <Button-->
+<!--            android:id="@+id/listAll"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:background="@color/mainColor"-->
+<!--            android:text="@string/list"-->
+<!--            android:textColor="@android:color/white"-->
+<!--            android:drawableBottom="@drawable/baseline_list_white_18dp"-->
+<!--            android:drawablePadding="15sp">-->
+<!--        </Button>-->
+<!--        <Button-->
+<!--            android:id="@+id/listDetails"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:background="@color/mainColor"-->
+<!--            android:text="@string/list_details"-->
+<!--            android:textColor="@android:color/white"-->
+<!--            android:drawableBottom="@drawable/baseline_archive_white_18dp"-->
+<!--            android:drawablePadding="15sp">-->
+
+<!--        </Button>-->
+<!--    </LinearLayout>-->
 
     <RelativeLayout
         android:layout_width="match_parent"

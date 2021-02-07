@@ -48,6 +48,9 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
         id_item=getIntent().getLongExtra("id_item", -1);
         isArchived=getIntent().getBooleanExtra("is_archived", false);
 
+        if(isArchived){
+            addItem.setVisibility(View.GONE);
+        }
         itemList=dbHelper.getAllItemDetailsListByItemID(id_item);
 
         adapter= new RecyclerViewDetails().setConfig(mRecyclerView, this, itemList, this);
@@ -121,8 +124,14 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
         ItemDetails itemDetails = itemList.get(position);
         if (itemDetails.getIs_removed() == 0) {
             itemDetails.setIs_removed(1);
+            dbHelper.deleteItemDetails(itemDetails.getId());
+
+            adapter.notifyItemChanged(position);
+
         } else {
-            itemDetails.setItem_id(0);
+            itemDetails.setIs_removed(0);
+            dbHelper.noDeleteItemDetails(itemDetails.getId());
+            adapter.notifyItemChanged(position);
         }
     }
 
@@ -130,14 +139,17 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
     @Override
     public void onItemClick(int position) {
 
-        setDeleteItemDetails(position);
-        adapter.notifyItemChanged(position);
+        if(!isArchived){
+            setDeleteItemDetails(position);
+        }
 
     }
 
 
     @Override
     public void onLongItemClick(int position) {
-        showDialogWindowUpdate(itemList.get(position), position);
+        if(!isArchived) {
+            showDialogWindowUpdate(itemList.get(position), position);
+        }
     }
 }
