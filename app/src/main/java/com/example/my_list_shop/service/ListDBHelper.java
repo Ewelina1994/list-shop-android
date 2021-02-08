@@ -66,6 +66,7 @@ public class ListDBHelper extends SQLiteOpenHelper {
         cv.put(ListContract.ListTable.COLUMN_IS_REMOVED, item.getIsRemoved());
         cv.put(ListContract.ListTable.COLUMN_DATE, String.valueOf(item.getData()));
 
+        db.insert(ListContract.ListTable.TABLE_NAME, null, cv);
         getLastId();
         return getLastId();
     }
