@@ -83,7 +83,7 @@ public class FragmentActivityList extends Fragment implements RecyclerViewClickI
         long lastdIdFromDatabase = dbHelper.addItem(newItem);
         newItem.setId(lastdIdFromDatabase);
         itemList.add(newItem);
-       adapter.notifyItemChanged(itemList.indexOf(newItem));
+        adapter.notifyItemChanged(itemList.indexOf(newItem));
 
     }
 
@@ -122,7 +122,7 @@ public class FragmentActivityList extends Fragment implements RecyclerViewClickI
         Intent intentDetails = new Intent(getActivity(), DetailsListActivity.class);
         Item item=itemList.get(position);
         intentDetails.putExtra("id_item", item.getId());
-
+        intentDetails.putExtra("name_item_parent", item.getTitle());
         intentDetails.putExtra("is_archived", false);
 
         startActivity(intentDetails);
@@ -135,7 +135,7 @@ public class FragmentActivityList extends Fragment implements RecyclerViewClickI
     }
     private void showDialogSetArchived(final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.are_you_sure_you_want_archived);
+        builder.setTitle(getText(R.string.are_you_sure_you_want_archived) + " "+itemList.get(position).getTitle());
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override

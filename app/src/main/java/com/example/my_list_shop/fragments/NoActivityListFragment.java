@@ -58,7 +58,7 @@ public class NoActivityListFragment extends Fragment implements RecyclerViewClic
         Intent intentDetails = new Intent(getActivity(), DetailsListActivity.class);
         Item item=itemList.get(position);
         intentDetails.putExtra("id_item", item.getId());
-
+        intentDetails.putExtra("name_item_parent", item.getTitle());
         intentDetails.putExtra("is_archived", true);
 
         startActivity(intentDetails);

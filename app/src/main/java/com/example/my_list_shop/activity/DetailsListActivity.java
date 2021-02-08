@@ -28,9 +28,9 @@ import java.util.List;
 
 public class DetailsListActivity extends AppCompatActivity implements RecyclerViewClickInterface {
     public static final String ITEM_LIST = "itemList";
-    public static final String RECYCLER = "recycler";
     public static final String NEW_ITEM_NAME = "newItemName";
     public static final String ID_PARENT = "idParent";
+    public static final String NAME_PARENT = "nameParent";
     public static final String IS_ARCHIVED = "isArchived";
     public static final String IS_SORT_DESC = "isSortedDesc";
 
@@ -40,6 +40,7 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
     ArrayList<ItemDetails> itemList;
     String newItemText;
     long id_parent;
+    String nameParent;
     boolean isArchived;
     boolean isSortedDesc =true;
     RecyclerViewDetails.ItemAdapter adapter;
@@ -59,6 +60,7 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
                 }
             });
             id_parent = getIntent().getLongExtra("id_item", -1);
+            nameParent = getIntent().getStringExtra("name_item_parent");
             isArchived = getIntent().getBooleanExtra("is_archived", false);
 
             itemList = (ArrayList<ItemDetails>) dbHelper.getAllItemDetailsListByItemID(id_parent);
@@ -67,9 +69,11 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
             itemList= savedInstanceState.getParcelableArrayList(ITEM_LIST);
             savedInstanceState.getString(NEW_ITEM_NAME);
             savedInstanceState.getLong(ID_PARENT);
+            savedInstanceState.getString(NAME_PARENT);
             savedInstanceState.getBoolean(IS_ARCHIVED);
             savedInstanceState.getBoolean(IS_SORT_DESC);
         }
+            setTitle(getText(R.string.list_details) + " "+ nameParent);
         adapter = new RecyclerViewDetails().setConfig(mRecyclerView, this, itemList, this);
         if (isArchived) {
             addItem.setVisibility(View.GONE);
@@ -208,9 +212,9 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
         savedInstanceState.putParcelableArrayList(ITEM_LIST, itemList);
-//        savedInstanceState.putString(RECYCLER, someString);
         savedInstanceState.putString(NEW_ITEM_NAME, newItemText);
         savedInstanceState.putLong(ID_PARENT, id_parent);
+        savedInstanceState.putString(NAME_PARENT, nameParent);
         savedInstanceState.putBoolean(IS_ARCHIVED, isArchived);
         savedInstanceState.putBoolean(IS_SORT_DESC, isSortedDesc);
 

@@ -1,8 +1,9 @@
 package com.example.my_list_shop.entity;
 
+import java.util.Collections;
 import java.util.Date;
 
-public class Item {
+public class Item implements Comparable<Item> {
     private long id;
     private String title;
     private int isRemoved;
@@ -55,5 +56,13 @@ public class Item {
 
     public void setData(Date data) {
         this.data = data;
+    }
+
+    @Override
+    public int compareTo(Item o) {
+        if(getData()==null || o.getData()==null){
+            return 0;
+        }
+        return getData().compareTo(o.getData());
     }
 }
