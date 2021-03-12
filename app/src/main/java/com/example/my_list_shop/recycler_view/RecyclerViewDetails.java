@@ -40,7 +40,7 @@ public class RecyclerViewDetails {
             title = itemView.findViewById(R.id.nameItem);
             check = itemView.findViewById(R.id.btnCheck);
             if (isArchived) {
-                check.setEnabled(true);
+                check.setVisibility(View.GONE);
             }
         }
 
