@@ -10,11 +10,13 @@ import androidx.viewpager.widget.ViewPager;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.my_list_shop.fragments.ComunicateBetweenFragments;
+import com.example.my_list_shop.fragments.CommunicateBetweenFragments;
 import com.example.my_list_shop.entity.Item;
 import com.example.my_list_shop.fragments.FragmentActivityList;
 import com.example.my_list_shop.fragments.NoActivityListFragment;
@@ -22,7 +24,7 @@ import com.example.my_list_shop.R;
 import com.example.my_list_shop.ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 
-public class MainActivity extends AppCompatActivity implements ComunicateBetweenFragments {
+public class MainActivity extends AppCompatActivity implements CommunicateBetweenFragments {
 
     private static final String CURRENT_FRAGMENT = "currentFrgm";
     private TabLayout tabLayout;
@@ -87,7 +89,37 @@ public class MainActivity extends AppCompatActivity implements ComunicateBetween
     public void sendItemToArchive(Item itemToArchive) {
         Fragment f = (NoActivityListFragment) viewPagerAdapter.getItem(1);
         if(f!=null) {
-            ((NoActivityListFragment) f).addItemToArchivedListFromAnotcherFragment(itemToArchive);
+            ((NoActivityListFragment) f).addItemToArchivedListFromAnotherFragment(itemToArchive);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.id_sort) {
+            sortListInFragment();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void sortListInFragment() {
+        //sprawdzamy która zakładka jest wybrana i odpowiednia metoda sortująca we fragmencie jest wywoływana
+         if(tabLayout.getSelectedTabPosition()==0){
+             Fragment f = (FragmentActivityList) viewPagerAdapter.getItem(0);
+             if(f!=null) {
+                 ((FragmentActivityList) f).sortList();
+             }
+         }else if(tabLayout.getSelectedTabPosition()==1){
+             Fragment f = (NoActivityListFragment) viewPagerAdapter.getItem(1);
+             if(f!=null) {
+                 ((NoActivityListFragment) f).sortListByDate();
+             }
+
+         }
     }
 }

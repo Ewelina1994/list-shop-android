@@ -15,7 +15,7 @@ public class ItemDetails implements Comparable<ItemDetails>, Parcelable {
     public ItemDetails(long item_id, String title, int is_removed, Date date) {
         this.item_id = item_id;
         this.title = title;
-        this.is_removed=is_removed;
+        this.is_removed = is_removed;
         this.date = date;
     }
 
@@ -86,7 +86,8 @@ public class ItemDetails implements Comparable<ItemDetails>, Parcelable {
     public int compareTo(ItemDetails o) {
         if (getDate() == null || o.getDate() == null)
             return 0;
-        return getDate().compareTo(o.getDate());    }
+        return getDate().compareTo(o.getDate());
+    }
 
     @Override
     public int describeContents() {

@@ -21,7 +21,7 @@ import java.util.List;
 
 public class ListDBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "list_shoping.db";
-    private static final int DATABASE_VERSION=1;
+    private static final int DATABASE_VERSION = 1;
 
     private static ListDBHelper instance;
     private SQLiteDatabase db;
@@ -41,9 +41,9 @@ public class ListDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        this.db=db;
+        this.db = db;
 
-        db.execSQL ("PRAGMA Foreign_keys = ON");
+        db.execSQL("PRAGMA Foreign_keys = ON");
 
         final String SQL_CREATE_ITEM_TABLE = ListContract.SQL_CREATE_ENTRIES;
         final String SQL_CREATE_ITEM_DETAILS_TABLE = ListDetailsContract.SQL_CREATE_ENTRIES;
@@ -59,8 +59,8 @@ public class ListDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public long addItem(Item item){
-        db=getWritableDatabase();
+    public long addItem(Item item) {
+        db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(ListContract.ListTable.COLUMN_TITLE, item.getTitle());
         cv.put(ListContract.ListTable.COLUMN_IS_REMOVED, item.getIsRemoved());
@@ -91,40 +91,39 @@ public class ListDBHelper extends SQLiteOpenHelper {
         return index;
     }
 
-    public boolean updateItem(Item item){
-        db=getWritableDatabase();
+    public boolean updateItem(Item item) {
+        db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(ListContract.ListTable.COLUMN_TITLE, item.getTitle());
-        cv.put(ListContract.ListTable.COLUMN_IS_REMOVED,item.getIsRemoved());
-        String id= String.valueOf(item.getId());
+        cv.put(ListContract.ListTable.COLUMN_IS_REMOVED, item.getIsRemoved());
+        String id = String.valueOf(item.getId());
 
-        return (db.update(ListContract.ListTable.TABLE_NAME, cv, "_id = ?", new String[]{id}))>0;
+        return (db.update(ListContract.ListTable.TABLE_NAME, cv, "_id = ?", new String[]{id})) > 0;
     }
 
-    public boolean deleteItem(long id_)
-    {
-        String id= String.valueOf(id_);
+    public boolean deleteItem(long id_) {
+        String id = String.valueOf(id_);
         ContentValues cv = new ContentValues();
         cv.put(ListContract.ListTable.COLUMN_IS_REMOVED, 1);
-        return (db.update(ListContract.ListTable.TABLE_NAME, cv, "_id = ?", new String[]{id}))>0;
+        return (db.update(ListContract.ListTable.TABLE_NAME, cv, "_id = ?", new String[]{id})) > 0;
     }
 
     public List<Item> getListItemActivity() {
         db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ListContract.ListTable.TABLE_NAME +" WHERE " + ListContract.ListTable.COLUMN_IS_REMOVED + " = " + 0, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ListContract.ListTable.TABLE_NAME + " WHERE " + ListContract.ListTable.COLUMN_IS_REMOVED + " = " + 0, null);
 
         return writeDate(cursor);
     }
 
     public List<Item> getListItemArchived() {
         db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ListContract.ListTable.TABLE_NAME +" WHERE " + ListContract.ListTable.COLUMN_IS_REMOVED + " = " + 1, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ListContract.ListTable.TABLE_NAME + " WHERE " + ListContract.ListTable.COLUMN_IS_REMOVED + " = " + 1, null);
 
         return writeDate(cursor);
     }
 
     public List<Item> writeDate(Cursor cursor) {
-        List<Item> itemlist= new ArrayList<>();
+        List<Item> itemlist = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
                 Item newItem = new Item();
@@ -148,8 +147,9 @@ public class ListDBHelper extends SQLiteOpenHelper {
         }
         return itemlist;
     }
-    public boolean addItemDetails(ItemDetails item){
-        db=getWritableDatabase();
+
+    public boolean addItemDetails(ItemDetails item) {
+        db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(ListDetailsContract.ListDetailsTable.COLUMN_LIST_ID, item.getItem_id());
         cv.put(ListDetailsContract.ListDetailsTable.COLUMN_TITLE, item.getTitle());
@@ -157,46 +157,46 @@ public class ListDBHelper extends SQLiteOpenHelper {
         return (db.insert(ListDetailsContract.ListDetailsTable.TABLE_NAME, null, cv)) > 0;
     }
 
-    public boolean updateItemDetails(ItemDetails item){
-        db=getWritableDatabase();
+    public boolean updateItemDetails(ItemDetails item) {
+        db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(ListDetailsContract.ListDetailsTable.COLUMN_LIST_ID, item.getItem_id());
         cv.put(ListDetailsContract.ListDetailsTable.COLUMN_TITLE, item.getTitle());
-        String id= String.valueOf(item.getId());
+        String id = String.valueOf(item.getId());
 
-        return (db.update(ListDetailsContract.ListDetailsTable.TABLE_NAME, cv, "_id = ?", new String[]{id})) >0;
+        return (db.update(ListDetailsContract.ListDetailsTable.TABLE_NAME, cv, "_id = ?", new String[]{id})) > 0;
     }
 
-    public boolean deleteItemDetails(long id_)
-    {
+    public boolean deleteItemDetails(long id_) {
         db = getWritableDatabase();
-        String id= String.valueOf(id_);
+        String id = String.valueOf(id_);
         ContentValues cv = new ContentValues();
         cv.put(ListDetailsContract.ListDetailsTable.COLUMN_IS_REMOVED, 1);
-        return (db.update(ListDetailsContract.ListDetailsTable.TABLE_NAME, cv, "_id = ?", new String[]{id}))>0;
+        return (db.update(ListDetailsContract.ListDetailsTable.TABLE_NAME, cv, "_id = ?", new String[]{id})) > 0;
     }
-    public boolean noDeleteItemDetails(long id_)
-    {
+
+    public boolean noDeleteItemDetails(long id_) {
         db = getWritableDatabase();
-        String id= String.valueOf(id_);
+        String id = String.valueOf(id_);
         ContentValues cv = new ContentValues();
         cv.put(ListDetailsContract.ListDetailsTable.COLUMN_IS_REMOVED, 0);
-        return (db.update(ListDetailsContract.ListDetailsTable.TABLE_NAME, cv, "_id = ?", new String[]{id}))>0;
+        return (db.update(ListDetailsContract.ListDetailsTable.TABLE_NAME, cv, "_id = ?", new String[]{id})) > 0;
     }
+
     public List<ItemDetails> getAllItemDetailsListByItemID(long id) {
         db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ListDetailsContract.ListDetailsTable.TABLE_NAME +" WHERE " + ListDetailsContract.ListDetailsTable.COLUMN_LIST_ID + " = " + id, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ListDetailsContract.ListDetailsTable.TABLE_NAME + " WHERE " + ListDetailsContract.ListDetailsTable.COLUMN_LIST_ID + " = " + id, null);
 
         List<ItemDetails> listItemDetails = new ArrayList<>();
-        if(cursor.moveToFirst()){
-            do{
+        if (cursor.moveToFirst()) {
+            do {
                 ItemDetails newItem = new ItemDetails();
                 newItem.setId(cursor.getInt(cursor.getColumnIndex(ListDetailsContract.ListDetailsTable._ID)));
                 newItem.setTitle(cursor.getString(cursor.getColumnIndex(ListDetailsContract.ListDetailsTable.COLUMN_TITLE)));
                 newItem.setItem_id(cursor.getInt(cursor.getColumnIndex(ListDetailsContract.ListDetailsTable.COLUMN_LIST_ID)));
                 newItem.setIs_removed(cursor.getInt(cursor.getColumnIndex(ListDetailsContract.ListDetailsTable.COLUMN_IS_REMOVED)));
                 String s = cursor.getString(cursor.getColumnIndex(ListDetailsContract.ListDetailsTable.COLUMN_DATE));
-                SimpleDateFormat sdf2=new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
+                SimpleDateFormat sdf2 = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
                 Date d = new Date();
                 try {
                     if (s != null) {
@@ -208,7 +208,7 @@ public class ListDBHelper extends SQLiteOpenHelper {
                 }
                 newItem.setDate(d);
                 listItemDetails.add(newItem);
-            }while ((cursor.moveToNext()));
+            } while ((cursor.moveToNext()));
         }
         cursor.close();
         return listItemDetails;

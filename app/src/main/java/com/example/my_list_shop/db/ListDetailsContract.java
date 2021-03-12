@@ -7,11 +7,11 @@ public class ListDetailsContract {
     }
 
     public static class ListDetailsTable implements BaseColumns {
-        public static final String TABLE_NAME="list_details_item";
-        public static final String COLUMN_LIST_ID="list_id";
-        public static final String COLUMN_TITLE="title";
-        public static final String COLUMN_IS_REMOVED ="is_remove";
-        public static final String COLUMN_DATE="date";
+        public static final String TABLE_NAME = "list_details_item";
+        public static final String COLUMN_LIST_ID = "list_id";
+        public static final String COLUMN_TITLE = "title";
+        public static final String COLUMN_IS_REMOVED = "is_remove";
+        public static final String COLUMN_DATE = "date";
 
     }
 

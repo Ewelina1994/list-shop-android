@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,18 +27,23 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
 public class FragmentActivityList extends Fragment implements RecyclerViewClickInterface {
-    View v;
+    public static final String ITEM_LIST = "itemList";
+    private static final String IS_SORT_DESC = "sort";
+    private View v;
     private RecyclerView mRecyclerView;
     private ListDBHelper dbHelper;
     private FloatingActionButton addItem;
-    List<Item> itemList;
+    private ArrayList<Item> itemList;
     private String newItemText;
     private RecyclerViewItem.ItemAdapter adapter;
-    ComunicateBetweenFragments sendItem;
+    private CommunicateBetweenFragments sendItem;
+    private boolean isSortedDesc = true;
 
     public FragmentActivityList() {
     }
@@ -45,10 +51,10 @@ public class FragmentActivityList extends Fragment implements RecyclerViewClickI
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        v= inflater.inflate(R.layout.list_activity_fragment, container, false);
-        mRecyclerView = (RecyclerView) v.findViewById(R.id.recyclerId);
+        v = inflater.inflate(R.layout.list_activity_fragment, container, false);
+        mRecyclerView = v.findViewById(R.id.recyclerId);
         adapter = new RecyclerViewItem().setConfig(mRecyclerView, getActivity(), itemList, this);
-        addItem = (FloatingActionButton) v.findViewById(R.id.fab);
+        addItem = v.findViewById(R.id.fab);
         addItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,7 +68,12 @@ public class FragmentActivityList extends Fragment implements RecyclerViewClickI
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dbHelper = new ListDBHelper(getActivity());
-        itemList = dbHelper.getListItemActivity();
+        itemList = (ArrayList<Item>) dbHelper.getListItemActivity();
+
+        if (savedInstanceState != null) {
+            itemList = savedInstanceState.getParcelableArrayList(ITEM_LIST);
+            savedInstanceState.getBoolean(IS_SORT_DESC);
+        }
 
     }
 
@@ -70,7 +81,7 @@ public class FragmentActivityList extends Fragment implements RecyclerViewClickI
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            sendItem = (ComunicateBetweenFragments) context;
+            sendItem = (CommunicateBetweenFragments) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
                     + " must implement TextClicked");
@@ -78,13 +89,12 @@ public class FragmentActivityList extends Fragment implements RecyclerViewClickI
     }
 
     private void addNewItemList() throws ParseException {
-        SimpleDateFormat sdf2=new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
         Item newItem = new Item(newItemText, 0, sdf2.parse(sdf2.format(new Date())));
-        long lastdIdFromDatabase = dbHelper.addItem(newItem);
-        newItem.setId(lastdIdFromDatabase);
+        long lastIdFromDatabase = dbHelper.addItem(newItem);
+        newItem.setId(lastIdFromDatabase);
         itemList.add(newItem);
         adapter.notifyItemChanged(itemList.indexOf(newItem));
-
     }
 
     private void showDialogWindow() {
@@ -120,7 +130,7 @@ public class FragmentActivityList extends Fragment implements RecyclerViewClickI
     @Override
     public void onItemClick(int position) {
         Intent intentDetails = new Intent(getActivity(), DetailsListActivity.class);
-        Item item=itemList.get(position);
+        Item item = itemList.get(position);
         intentDetails.putExtra("id_item", item.getId());
         intentDetails.putExtra("name_item_parent", item.getTitle());
         intentDetails.putExtra("is_archived", false);
@@ -133,14 +143,15 @@ public class FragmentActivityList extends Fragment implements RecyclerViewClickI
         showDialogSetArchived(position);
 
     }
+
     private void showDialogSetArchived(final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getText(R.string.are_you_sure_you_want_archived) + " "+itemList.get(position).getTitle());
+        builder.setTitle(getText(R.string.are_you_sure_you_want_archived) + " " + itemList.get(position).getTitle());
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-             archive_list(position);
+                archive_list(position);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -154,8 +165,8 @@ public class FragmentActivityList extends Fragment implements RecyclerViewClickI
     }
 
     private boolean archive_list(int position) {
-        if(position<itemList.size()){
-            Item item=itemList.get(position);
+        if (position < itemList.size()) {
+            Item item = itemList.get(position);
             item.setIsRemoved(1);
             dbHelper.updateItem(item);
             itemList.remove(item);
@@ -165,5 +176,31 @@ public class FragmentActivityList extends Fragment implements RecyclerViewClickI
             return true;
         }
         return false;
+    }
+
+    public void sortList() {
+        if (!isSortedDesc) {
+            Collections.sort(itemList, new Comparator<Item>() {
+                @Override
+                public int compare(Item o1, Item o2) {
+                    return o1.getData().compareTo(o2.getData());
+                }
+            });
+            isSortedDesc = true;
+        } else {
+            Collections.reverse(itemList);
+            System.out.println("sort odwrotne");
+            isSortedDesc = false;
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(IS_SORT_DESC, isSortedDesc);
+        outState.putParcelableArrayList(ITEM_LIST, (ArrayList<? extends Parcelable>) itemList);
+
     }
 }

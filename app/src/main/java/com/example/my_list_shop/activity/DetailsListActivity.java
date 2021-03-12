@@ -42,39 +42,40 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
     long id_parent;
     String nameParent;
     boolean isArchived;
-    boolean isSortedDesc =true;
+    boolean isSortedDesc = true;
     RecyclerViewDetails.ItemAdapter adapter;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details_list_activity);
         mRecyclerView = findViewById(R.id.recyclerId);
-        addItem = (FloatingActionButton) findViewById(R.id.fab);
+        addItem = findViewById(R.id.fab);
         dbHelper = new ListDBHelper(this);
 
 
-            addItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showDialogWindowAdd();
-                }
-            });
-            id_parent = getIntent().getLongExtra("id_item", -1);
-            nameParent = getIntent().getStringExtra("name_item_parent");
-            isArchived = getIntent().getBooleanExtra("is_archived", false);
+        addItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialogWindowAdd();
+            }
+        });
+        id_parent = getIntent().getLongExtra("id_item", -1);
+        nameParent = getIntent().getStringExtra("name_item_parent");
+        isArchived = getIntent().getBooleanExtra("is_archived", false);
 
-            itemList = (ArrayList<ItemDetails>) dbHelper.getAllItemDetailsListByItemID(id_parent);
+        itemList = (ArrayList<ItemDetails>) dbHelper.getAllItemDetailsListByItemID(id_parent);
 
-            if (savedInstanceState != null){
-            itemList= savedInstanceState.getParcelableArrayList(ITEM_LIST);
+        if (savedInstanceState != null) {
+            itemList = savedInstanceState.getParcelableArrayList(ITEM_LIST);
             savedInstanceState.getString(NEW_ITEM_NAME);
             savedInstanceState.getLong(ID_PARENT);
             savedInstanceState.getString(NAME_PARENT);
             savedInstanceState.getBoolean(IS_ARCHIVED);
             savedInstanceState.getBoolean(IS_SORT_DESC);
         }
-            setTitle(getText(R.string.list_details) + " "+ nameParent);
-        adapter = new RecyclerViewDetails().setConfig(mRecyclerView, this, itemList, this);
+        setTitle(getText(R.string.list_details) + " " + nameParent);
+        adapter = new RecyclerViewDetails().setConfig(mRecyclerView, this, itemList, this, isArchived);
         if (isArchived) {
             addItem.setVisibility(View.GONE);
         }
@@ -111,6 +112,7 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
         dbHelper.addItemDetails(newItemDetails);
         itemList.add(newItemDetails);
     }
+
     private void editItem(ItemDetails itemDetails, int position) {
         if (!newItemText.equals("")) {
             itemDetails.setTitle(newItemText);
@@ -163,7 +165,7 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
     @Override
     public void onItemClick(int position) {
 
-        if(!isArchived){
+        if (!isArchived) {
             setDeleteItemDetails(position);
         }
 
@@ -172,7 +174,7 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
 
     @Override
     public void onLongItemClick(int position) {
-        if(!isArchived) {
+        if (!isArchived) {
             showDialogWindowUpdate(itemList.get(position), position);
         }
     }
@@ -182,6 +184,7 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.id_sort) {
@@ -193,24 +196,24 @@ public class DetailsListActivity extends AppCompatActivity implements RecyclerVi
 
     private void sortList(List<ItemDetails> itemList) {
 
-        if(!isSortedDesc){
+        if (!isSortedDesc) {
             Collections.sort(itemList, new Comparator<ItemDetails>() {
                 public int compare(ItemDetails o1, ItemDetails o2) {
                     return o1.getDate().compareTo(o2.getDate());
                 }
             });
-            isSortedDesc =true;
-        }else {
+            isSortedDesc = true;
+        } else {
             Collections.reverse(itemList);
             System.out.println("sort odwrotne");
-            isSortedDesc =false;
+            isSortedDesc = false;
         }
 
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState){
+    public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putParcelableArrayList(ITEM_LIST, itemList);
         savedInstanceState.putString(NEW_ITEM_NAME, newItemText);
         savedInstanceState.putLong(ID_PARENT, id_parent);
